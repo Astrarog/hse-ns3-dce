@@ -24,16 +24,16 @@ case $i in
     LINK_DELAY_STEP="${i#*=}"
     shift # past argument=value
     ;;
-    --bandwidth-max=*)
-    BANDWIDTH_MAX="${i#*=}"
+    --window-size-max=*)
+    WINDOW_SIZE_MAX="${i#*=}"
     shift # past argument=value
     ;;
-    --bandwidth-min=*)
-    BANDWIDTH_MIN="${i#*=}"
+    --window-size-min=*)
+    WINDOW_SIZE_MIN="${i#*=}"
     shift # past argument=value
     ;;	
-	--bandwidth-step=*)
-    BANDWIDTH_STEP="${i#*=}"
+	--window-size-step=*)
+    WINDOW_SIZE_STEP="${i#*=}"
     shift # past argument=value
     ;;
 	--help)
@@ -45,11 +45,11 @@ case $i in
 	echo ""
 	echo "	--link-delay-step=VALUE"
 	echo ""
-	echo "	--bandwidth-max=VALUE"
+	echo "	--window-size-max=VALUE"
 	echo ""
-	echo "	--bandwidth-min=VALUE"
+	echo "	--window-size-min=VALUE"
 	echo ""
-	echo "	--bandwidth-step=VALUE"
+	echo "	--window-size-step=VALUE"
 	echo ""
 	exit
 	;;
@@ -67,13 +67,13 @@ echo 'Link delay,Window size,Bandwidth' > data.csv
 status_path='/home/vagrant/dce/source/ns-3-dce/files-1/var/log/*/status'
 stdout_path='/home/vagrant/dce/source/ns-3-dce/files-1/var/log/*/stdout'
 
-max_progress=$(( ( ($LINK_DELAY_MAX - $LINK_DELAY_MIN) / $LINK_DELAY_STEP + 1) * ( ($BANDWIDTH_MAX - $BANDWIDTH_MIN) / $BANDWIDTH_STEP + 1)  ))
+max_progress=$(( ( ($LINK_DELAY_MAX - $LINK_DELAY_MIN) / $LINK_DELAY_STEP + 1) * ( ($WINDOW_SIZE_MAX - $WINDOW_SIZE_MIN) / $WINDOW_SIZE_STEP + 1)  ))
 progress=0
 
 echo "Perfomance test started. Progress:"
 for ld in $(seq $LINK_DELAY_MIN $LINK_DELAY_STEP $LINK_DELAY_MAX)
 do
-	for ws in $(seq $BANDWIDTH_MIN $BANDWIDTH_STEP $BANDWIDTH_MAX)
+	for ws in $(seq $WINDOW_SIZE_MIN $WINDOW_SIZE_STEP $WINDOW_SIZE_MAX)
 	do
 		(cd /home/vagrant/dce/source/ns-3-dce; ./waf --run "dce-iperf --window-size=${ws}K --link-delay=${ld}ms") > /dev/null 2>/dev/null
 		status=`cat $status_path | tail -n1 | awk -F "--> " '{print $2}'`
