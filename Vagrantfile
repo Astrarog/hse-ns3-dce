@@ -14,6 +14,7 @@ Vagrant.configure("2") do |config|
 	# copying perfomance test startup file
 	config.vm.provision "file", source: "import/run-perf.sh", destination: "/home/vagrant/run-perf.sh"
 	config.vm.provision "shell", privileged: true, inline: "chmod 777 /home/vagrant/run-perf.sh"
+	config.vm.provision "shell", privileged: true, inline: "sed -i -e 's/\r$//' /home/vagrant/run-perf.sh"
 	
 	# shared folder creation
 	config.vm.synced_folder  "share/", "/home/vagrant/share", create: true
