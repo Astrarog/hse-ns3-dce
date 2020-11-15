@@ -106,7 +106,7 @@ do
 	done
 done
 
-echo -ne "[${hashes}${space}] (${percent}%) ${dots}${dot_space}\r"
+echo "[${hashes}${space}] (${percent}%) ${dots}${dot_space}"
 
 echo "Test done. Aborting."
 
