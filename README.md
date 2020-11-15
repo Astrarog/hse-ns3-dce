@@ -1,45 +1,59 @@
-# NS3 DCE Vagrant Environment
-The ojective of this task is to launch NS3 network simulator with DCE support and to research dependency
+# NS3 DCE Laboratory using Vagrant Environment
+The ojective of this laboratory is to launch NS3 network simulator with DCE support and to research dependency
 between TCP window size and TCP transfer speed.
 
 #### 1.  Setup Vagrant
+
 Download from https://www.vagrantup.com/downloads.html and install
-#### 2.  Pull repository
-```git clone https://github.com/ivanlysogor/hse-ns3-dce```
-#### 3. Setup environment
+
+#### 2.  Clone current directory
+
+We will suppose that it is cloned into ```<lab_dir>```
+```bash
+git clone https://github.com/Astrarog/hse-ns3-dce.git <lab_dir>
 ```
-cd hse-ns3-dce
+
+#### 3. Setup environment
+```bash
+cd <lab_dir>
 vagrant up
 ```
-#### 4. Connect to VM
-```
+This will create a VM with needed environment.
+Shared folder ```<lab_dir>/share``` is also created and conntected to ```~/share``` in guest VM.
+#### 4. Connect to VM and launch perfomance scrtipt
+```bash
 vagrant ssh
-$cd dce/source/ns-3-dce/
-$./waf --run dce-iperf
-Waf: Entering directory `/home/vagrant/dce/source/ns-3-dce/build'
-[ 10/320] lib/pkgconfig/libns3-dev-netlink-debug.pc:  -> build/lib/pkgconfig/libns3-dev-netlink-debug.pc
-[113/320] lib/pkgconfig/libns3-dev-dce-debug.pc:  -> build/lib/pkgconfig/libns3-dev-dce-debug.pc
-Waf: Leaving directory `/home/vagrant/dce/source/ns-3-dce/build'
-'build' finished successfully (0.191s)
-$cat files-1/var/log/*/*
-iperf -s -P 1
-Start Time: NS3 Time:          0s (           +599999999.0ns) , REAL Time: 1574625321
-      Time: NS3 Time:          0s (           +599999999.0ns) , REAL Time: 1574625321 --> Starting: /home/vagrant/dce/build/bin/iperf
-      Time: NS3 Time:         12s (         +12884215997.0ns) , REAL Time: 1574625324 --> Exit (0)
-------------------------------------------------------------
-Server listening on TCP port 5001
-TCP window size:  128 KByte (default)
-------------------------------------------------------------
-[  4] local 10.1.1.2 port 5001 connected with 10.1.1.1 port 49153
-[ ID] Interval       Transfer     Bandwidth
-[  4]  0.0-11.2 sec  5.62 MBytes  4.23 Mbits/sec
+$./run-perf.sh
 $exit
 ```
 
-#### 5. Change TCP window size (to smaller or bigger value) and change link delay. Compare transfer speed and identify dependency between TCP window size, link delay and transfer speed
-You can use ns3 tutorial to get additional information on the ns3 programming - https://www.nsnam.org/docs/release/3.29/tutorial/ns-3-tutorial.pdf
+```run-perf.sh``` is a scrtipt based on **iperf** test that measure network perfomance.
+Parameters changed as follows.
 
-ns3 DCE iperf example located in the ```/home/vagrant/dce/source/ns-3-dce/example``` directory.
+|Changed parametr     | Begin value | End value | Step |
+|-------------------- |:-----------:|:---------:|:----:|
+|TCP window size (Kb) | 1 			| 301 		| 5    |
+|Link delay (ms) 	  | 1 			| 1026 		| 5    |
 
-#### 6. Destroy VM
-```vagrant destroy```
+Resulted **bandwidth** data is saved in ```~/share/data.csv``` file.
+
+
+#### 5. Destroy VM and visualise data
+
+VM image can be destroyed via the command:
+```bash 
+vagrant destroy
+```
+
+After this done data can be represented as 3D plot.
+JupyterNotebook scrtipt for this task is provided in 
+```<lab_dir>/visualisation/BandwithVisualisation.ipynb```
+
+#### 6. Make graphics and Interpret the results
+![Bandwidth graphics 1](visualisation/Bandwidth_1.png)
+![Bandwidth graphics 2](visualisation/Bandwidth_2.png)
+
+The growth of link delay can be resisted with moderate increase of window size, as can be seen in graphics.
+Nevertheless, a massive increase of window size is frequenlty followed by a drop in bandwidth regardless of link delay mostly.
+
+**As a result, with increase of link delay the window size impact on the bandwidth goes up.**
